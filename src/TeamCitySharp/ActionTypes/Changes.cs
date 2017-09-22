@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TeamCitySharp.Connection;
 using TeamCitySharp.DomainEntities;
@@ -42,5 +43,14 @@ namespace TeamCitySharp.ActionTypes
             return changes.FirstOrDefault();
         }
 
+        public List<Change> PendingByBuildConfigIdAndBranch(string buldConfigId, string branch)
+        {
+            var changeWrapper = _caller.GetFormat<ChangeWrapper>("/app/rest/changes?locator=buildType:(id:" + buldConfigId + "),branch:" + branch + ",pending:true");
+            if (int.Parse(changeWrapper.Count) > 0)
+            {
+                return changeWrapper.Change;
+            }
+            return new List<Change>();
+        }
     }
 }

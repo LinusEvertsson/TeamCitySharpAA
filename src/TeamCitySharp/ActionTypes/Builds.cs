@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using TeamCitySharp.Connection;
 using TeamCitySharp.DomainEntities;
@@ -18,7 +19,7 @@ namespace TeamCitySharp.ActionTypes
 
         public List<Build> ByBuildLocator(BuildLocator locator)
         {
-            var buildWrapper = _caller.GetFormat<BuildWrapper>("/app/rest/builds?locator={0}", locator);
+            var buildWrapper = _caller.GetFormat<BuildWrapper>("/app/rest/builds?locator={0}&fields=$long,build($short,startDate,finishDate,changes(change($short,comment)))", locator);
             if (int.Parse(buildWrapper.Count) > 0)
             {
                 return buildWrapper.Build;
@@ -50,6 +51,15 @@ namespace TeamCitySharp.ActionTypes
         {
             var builds = ByBuildLocator(BuildLocator.WithDimensions(BuildTypeLocator.WithId(buildConfigId),
                                                                           status: BuildStatus.SUCCESS,
+                                                                          maxResults: 1
+                                                  ));
+            return builds != null ? builds.FirstOrDefault() : new Build();
+        }
+
+        public Build LastFinishedBuildByBuildConfigIdAndBranch(string buildConfigId, string branchName)
+        {
+            var builds = ByBuildLocator(BuildLocator.WithDimensions(BuildTypeLocator.WithId(buildConfigId), branch: branchName,
+                                                                          state: "finished",
                                                                           maxResults: 1
                                                   ));
             return builds != null ? builds.FirstOrDefault() : new Build();

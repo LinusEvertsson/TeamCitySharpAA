@@ -9,6 +9,7 @@ namespace TeamCitySharp.ActionTypes
     {
         List<Build> SuccessfulBuildsByBuildConfigId(string buildConfigId);
         Build LastSuccessfulBuildByBuildConfigId(string buildConfigId);
+        Build LastFinishedBuildByBuildConfigIdAndBranch(string buildConfigId, string branchName);
         List<Build> FailedBuildsByBuildConfigId(string buildConfigId);
         Build LastFailedBuildByBuildConfigId(string buildConfigId);
         Build LastBuildByBuildConfigId(string buildConfigId);
